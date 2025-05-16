@@ -7,7 +7,7 @@ import FeaturesGrid from './FeaturesGrid'
 import ProfileCard from './ProfileCard'
 import FormLanding from './FormLanding'
 
-export default function Overview() {
+export default function Home() {
 
 
   const profileData = [{

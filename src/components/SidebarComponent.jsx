@@ -13,12 +13,14 @@ import {
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../lib/utils";
-import useAuth from "../store/useAuth";
+import { useDispatch, useSelector } from "react-redux";
+import { removeAuth } from "../features/auth/authSlice"; // path based on your project structure
 
 export function SidebarDemo({ outlet }) {
 
   const navigate = useNavigate();
-  const { removeAuth } = useAuth();
+const dispatch = useDispatch();
+const user = useSelector((state) => state.auth.user);
 
   const links = [
     {
@@ -26,7 +28,7 @@ export function SidebarDemo({ outlet }) {
       href: "dashboard",
       icon: (
         <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
+      )
     },
     {
       label: "Assigned Mentors",
@@ -72,17 +74,15 @@ export function SidebarDemo({ outlet }) {
         <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "Logout",
-      // href: "logout",
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-      action: () => {
-        removeAuth();
-        navigate("/auth/login")
-      }
-    },
+{
+  label: "Logout",
+  icon: <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+  action: () => {
+    dispatch(removeAuth());
+    navigate("/auth/login");
+  }
+}
+
 
   ];
 
@@ -91,10 +91,10 @@ export function SidebarDemo({ outlet }) {
   return (
     <div
       className={cn(
-        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 max-w-7xl mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden h-full"
+        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1  mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden h-full"
       )}
     >
-      <Sidebar open={open} setOpen={setOpen} animate={true}>
+      <Sidebar open={open} setOpen={setOpen} animate={false}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <>
@@ -115,19 +115,20 @@ export function SidebarDemo({ outlet }) {
             </div>
           </div>
           <div>
-            <SidebarLink  
-              link={{
-                label: "Manav Guleria",
-                href: "/profile",
-                icon: (
-                  <img
-                    src="/log.png"
-                    className="h-7 w-7 flex-shrink-0 rounded-full"
-                    alt="Avatar"
-                  />
-                ),
-              }}
-            />
+<SidebarLink  
+  link={{
+    label: user?.name || "User",
+    href: "/profile",
+    icon: (
+      <img
+        src="/log.png"
+        className="h-7 w-7 flex-shrink-0 rounded-full"
+        alt="Avatar"
+      />
+    ),
+  }}
+/>
+
           </div>
         </SidebarBody>
       </Sidebar>

@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import Urls from "../../config/urls";
 import http from "../lib/http";
-import useAuth from "../store/useAuth";
 
 export default function SetPassword() {
   const {
@@ -14,28 +13,27 @@ export default function SetPassword() {
     watch,
     formState: { errors },
   } = useForm();
+  
   const navigate = useNavigate();
   const password = watch("password");
-const {id} = useParams();
-  const setPasswordMutation = useMutation({
-    mutationFn: (data) =>{
+  const { id } = useParams();
 
+  const setPasswordMutation = useMutation({
+    mutationFn: (data) => {
       const payload = {
         ...data,
         userid: id,
-      }
-      return http.post(`${Urls.baseURL}${Urls.setpassword}`, payload)
-    } 
-    ,
-      onSuccess: () => {
-        toast.success("Password set successfully!");
-        navigate("auth/login");
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.message || "Failed to set password.");
-      },
-    }
-  );
+      };
+      return http.post(`${Urls.baseURL}${Urls.setpassword}`, payload);
+    },
+    onSuccess: () => {
+      toast.success("Password set successfully!");
+      navigate("/auth/login");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to set password.");
+    },
+  });
 
   const onSubmit = (data) => {
     setPasswordMutation.mutate(data);

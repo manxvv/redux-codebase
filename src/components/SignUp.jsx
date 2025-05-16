@@ -1,11 +1,9 @@
-import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Urls from "../../config/urls";
-import useAuth from "../store/useAuth";
-import { Link } from "react-router-dom"
 import http from "../lib/http";
 
 function SignUp() {
@@ -15,23 +13,19 @@ function SignUp() {
     formState: { errors },
   } = useForm();
 
-  const { setLoading, setAuth , user, token} = useAuth();
-  console.log('user and token signup', user , token)
   const navigate = useNavigate();
 
   const signUpMutation = useMutation({
     mutationFn: (data) => http.post(Urls.signup, data),
     onSuccess: (data) => {
-      console.log(data, "sign up data:");
-      // navigate('/'); 
+      console.log("Signup success:", data);
+      // Optionally redirect to login or show success message
+      navigate("/auth/login");
     },
     onError: (error) => {
-      console.log("Sign up failed: ", error);
+      console.error("Signup failed:", error);
     },
   });
-
-
-
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -48,8 +42,7 @@ function SignUp() {
               type="text"
               {...register("firstName", { required: "Name is required" })}
               placeholder="Enter your name"
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.firstName ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.firstName ? "border-red-500" : "border-gray-300"}`}
             />
             {errors.firstName && (
               <p className="mt-1 text-sm text-red-500">{errors.firstName.message}</p>
@@ -63,13 +56,10 @@ function SignUp() {
               type="text"
               {...register("surname", { required: "Surname is required" })}
               placeholder="Enter your surname"
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.surname ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.surname ? "border-red-500" : "border-gray-300"}`}
             />
             {errors.surname && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.surname.message}
-              </p>
+              <p className="mt-1 text-sm text-red-500">{errors.surname.message}</p>
             )}
           </div>
 
@@ -80,8 +70,7 @@ function SignUp() {
               type="email"
               {...register("email", { required: "Email is required" })}
               placeholder="Enter your email"
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.email ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.email ? "border-red-500" : "border-gray-300"}`}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
@@ -95,13 +84,10 @@ function SignUp() {
               type="tel"
               {...register("phone", { required: "Phone number is required" })}
               placeholder="Enter your phone number"
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.phone ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.phone ? "border-red-500" : "border-gray-300"}`}
             />
             {errors.phone && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.phone.message}
-              </p>
+              <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
             )}
           </div>
 
@@ -133,9 +119,8 @@ function SignUp() {
             )}
           </div>
 
-          {/* Buttons */}
+          {/* Submit */}
           <div className="flex justify-center">
-
             <button
               type="submit"
               className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"

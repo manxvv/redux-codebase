@@ -3,24 +3,23 @@ import Layout from './layout';
 import LoginForm from './components/Login';
 import SignUp from './components/SignUp';
 import ForgotPassword from './components/ForgotPassword';
-import Overview from './components/Overview';
-import useAuth from './store/useAuth';
 import Dashboard from "./components/Dashboard"
 import Profile from './components/Profile';
 import SetPassword from './components/SetPassword';
+import Home from './components/Home';
+import { useSelector } from 'react-redux';
+
 
 function AuthRequired({ requiredRoles = [], children }) {
-    const { user, authenticated } = useAuth()
-    // const authenticated = !!user;
-    let rolePermitted = true;
-    if (requiredRoles.length) {
-        rolePermitted = requiredRoles.includes(user?.roleName);
-    }
-    // console.log("user.role" , user?.roleName);   
-    // if (rolePermitted) {
-    //     return <Navigate to="/auth/not-autorized" />;
-    // }
-    return authenticated && rolePermitted ? children : <Navigate to="/auth/signup" />;
+  const user = useSelector((state) => state.auth.user);
+  const authenticated = useSelector((state) => state.auth.authenticated);
+
+  let rolePermitted = true;
+  if (requiredRoles.length) {
+    rolePermitted = requiredRoles.includes(user?.roleName);
+  }
+
+  return authenticated && rolePermitted ? children : <Navigate to="/auth/signup" />;
 }
 
 const router = createBrowserRouter([
@@ -37,19 +36,19 @@ const router = createBrowserRouter([
         element: <ForgotPassword />,
     },
     {
-        path: '/overview',
-        element: <Overview />,
+        path: '/',
+        element: <Home />,
     },
     {
         path: '/password/:id',
         element: <SetPassword />,
     },
     {
-        path: '/',
+        path: '/app/',
         element: (
-            <AuthRequired requiredRoles={["Admin", "Mentor","OT","Student"]}>
+            // <AuthRequired requiredRoles={["Admin", "Mentor","OT","Student"]}>
                 <Layout />
-            </AuthRequired>
+            // </AuthRequired>
         ),
         children: [
             {
