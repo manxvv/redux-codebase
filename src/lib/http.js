@@ -1,5 +1,6 @@
 import axios from "axios";
 import Urls from "../config/urls";
+import { store } from "@/app/store";
 
 const http = axios.create({
   baseURL: Urls.baseURL,
@@ -8,10 +9,8 @@ const http = axios.create({
 
 http.interceptors.request.use(
   (config) => {
-    // Get token from localStorage or wherever you store it
-    const token = localStorage.getItem("token");
+    const token = store.getState().auth.access_token; // <- Access token directly
 
-    // Set Authorization header if token exists
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

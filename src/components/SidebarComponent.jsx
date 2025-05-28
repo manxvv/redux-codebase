@@ -77,7 +77,7 @@ export function SidebarDemo({ outlet }) {
   return (
     <div
       className={cn(
-        "flex flex-col md:flex-row bg-white dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden h-full"
+        "flex flex-col md:flex-row bg-white dark:bg-neutral-900 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-500 overflow-hidden h-full"
       )}
     >
       <Sidebar open={open} setOpen={setOpen} animate={false}>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Modal from "@/components/Modal";
 import { useForm } from 'react-hook-form';
+import { useSelector } from "react-redux";
 
 const Users = () => {
     const [globalFilter, setGlobalFilter] = useState("");
@@ -115,11 +116,6 @@ const Users = () => {
         console.log(user, 'fsd');
 
     }
-
-
-
-
-
 
 
     const handleEdit = (user) => {
