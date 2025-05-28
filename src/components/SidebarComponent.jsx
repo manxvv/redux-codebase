@@ -3,24 +3,42 @@ import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/Sidebar";
 import {
   IconArrowLeft,
   IconBrandTabler,
-  IconBubbleText,
-  IconChartAreaLine,
-  IconLibrary,
-  IconSchool,
-  IconSettings,
   IconUserBolt,
+  IconUserCircle,
 } from "@tabler/icons-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../lib/utils";
 import { useDispatch, useSelector } from "react-redux";
-import { removeAuth } from "../features/auth/authSlice"; // path based on your project structure
+import Header from "./Header";
+import { logout } from "@/features/auth/authSlice";
 
 export function SidebarDemo({ outlet }) {
-
   const navigate = useNavigate();
-const dispatch = useDispatch();
-const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+
+
+
+  const user = useSelector((state) => state.auth.user);
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/auth/login");
+  };
+
+  const getHeaderTitle = () => {
+    switch (location.pathname) {
+      case "/app/dashboard":
+        return "Dashboard";
+      case "/app/users":
+        return "User Management";
+      case "/app/profile":
+        return "Profile";
+      default:
+        return "Fandom.Live";
+    }
+  };
+
+
 
   const links = [
     {
@@ -28,62 +46,30 @@ const user = useSelector((state) => state.auth.user);
       href: "dashboard",
       icon: (
         <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      )
-    },
-    {
-      label: "Assigned Mentors",
-      href: "assigned-mentors",
-      icon: (
-        <IconBubbleText className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
+    {
+      label: "Users",
+      href: "users",
 
-    {
-      label: "Available Courses",
-      href: "available-courses",
       icon: (
-        <IconLibrary className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-
-    {
-      label: "Completed Courses",
-      href: "completed-courses",
-      icon: (
-        <IconChartAreaLine className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Scheduled Classes",
-      href: "scheduled-classes",
-      icon: (
-        <IconSchool className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Profile",
       href: "profile",
       icon: (
-        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Settings",
-      href: "setting",
+      label: "Logout",
       icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
+      action: handleLogout, // Use the function reference
     },
-{
-  label: "Logout",
-  icon: <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
-  action: () => {
-    dispatch(removeAuth());
-    navigate("/auth/login");
-  }
-}
-
-
   ];
 
   const [open, setOpen] = useState(false);
@@ -91,7 +77,7 @@ const user = useSelector((state) => state.auth.user);
   return (
     <div
       className={cn(
-        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1  mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden h-full"
+        "flex flex-col md:flex-row bg-white dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden h-full"
       )}
     >
       <Sidebar open={open} setOpen={setOpen} animate={false}>
@@ -115,24 +101,32 @@ const user = useSelector((state) => state.auth.user);
             </div>
           </div>
           <div>
-<SidebarLink  
-  link={{
-    label: user?.name || "User",
-    href: "/profile",
-    icon: (
-      <img
-        src="/log.png"
-        className="h-7 w-7 flex-shrink-0 rounded-full"
-        alt="Avatar"
-      />
-    ),
-  }}
-/>
-
+            <SidebarLink
+              link={{
+                label: user?.name || "User",
+                href: "/app/profile",
+                icon: (
+                  <img
+                    src="/images.png"
+                    className="h-7 w-7 flex-shrink-0 object-cover rounded-full"
+                    alt="Avatar"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/28x28/cccccc/666666?text=U";
+                    }}
+                  />
+                ),
+              }}
+            />
           </div>
         </SidebarBody>
       </Sidebar>
-      {outlet}
+
+      <div className="flex no-scrollbar border flex-col flex-1 overflow-hidden">
+        <Header header={getHeaderTitle()} />
+        <div className="flex-1 no-scrollbar overflow-y-auto">
+          {outlet}
+        </div>
+      </div>
     </div>
   );
 }
@@ -140,7 +134,7 @@ const user = useSelector((state) => state.auth.user);
 export const Logo = () => {
   return (
     <Link
-      to="/" //
+      to="/"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
       <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
@@ -149,7 +143,8 @@ export const Logo = () => {
         animate={{ opacity: 1 }}
         className="font-medium text-black dark:text-white whitespace-pre"
       >
-        Admin      </motion.span>
+        Fandom.Live
+      </motion.span>
     </Link>
   );
 };
@@ -163,7 +158,4 @@ export const LogoIcon = () => {
       <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
     </Link>
   );
-};
-
-
-
+};  

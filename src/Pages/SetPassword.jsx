@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import Urls from "../../config/urls";
+import Urls from "../config/urls";
 import http from "../lib/http";
 
 export default function SetPassword() {

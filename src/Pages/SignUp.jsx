@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import Urls from "../../config/urls";
+import Urls from "../config/urls";
 import http from "../lib/http";
 
 function SignUp() {
@@ -19,7 +19,6 @@ function SignUp() {
     mutationFn: (data) => http.post(Urls.signup, data),
     onSuccess: (data) => {
       console.log("Signup success:", data);
-      // Optionally redirect to login or show success message
       navigate("/auth/login");
     },
     onError: (error) => {

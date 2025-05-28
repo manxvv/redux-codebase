@@ -1,22 +1,33 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import Layout from './layout';
-import LoginForm from './components/Login';
-import SignUp from './components/SignUp';
-import ForgotPassword from './components/ForgotPassword';
-import Dashboard from "./components/Dashboard"
-import Profile from './components/Profile';
-import SetPassword from './components/SetPassword';
-import Home from './components/Home';
+import LoginForm from './Pages/Login';
+import SignUp from './Pages/SignUp';
+import ForgotPassword from './Pages/ForgotPassword';
+import Dashboard from "./Pages/Dashboard"
+import Profile from './Pages/Profile';
+import SetPassword from './Pages/SetPassword';
+import Home from './Pages/Home';
 import { useSelector } from 'react-redux';
+import Users from './Pages/Users';
+import Otp from './Pages/Otp';
+
+
+
+function GuestOnly({ children }) {
+  const authenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  return authenticated ? <Navigate to="/app/dashboard" /> : children;
+}
 
 
 function AuthRequired({ requiredRoles = [], children }) {
   const user = useSelector((state) => state.auth.user);
-  const authenticated = useSelector((state) => state.auth.authenticated);
+  const authenticated = useSelector((state) => state.auth.isAuthenticated);
+
 
   let rolePermitted = true;
   if (requiredRoles.length) {
-    rolePermitted = requiredRoles.includes(user?.roleName);
+    rolePermitted = requiredRoles.includes(user?.role);
   }
 
   return authenticated && rolePermitted ? children : <Navigate to="/auth/signup" />;
@@ -24,13 +35,21 @@ function AuthRequired({ requiredRoles = [], children }) {
 
 const router = createBrowserRouter([
     {
-        path: '/auth/login',
-        element: <LoginForm />,
-    },
-    {
-        path: '/auth/signup',
-        element: <SignUp />,
-    },
+    path: '/auth/login',
+    element: (
+      <GuestOnly>
+        <LoginForm />
+      </GuestOnly>
+    ),
+  },
+  {
+    path: '/auth/signup',
+    element: (
+      <GuestOnly>
+        <SignUp />
+      </GuestOnly>
+    ),
+  },
     {
         path: '/auth/forgot-password',
         element: <ForgotPassword />,
@@ -43,12 +62,16 @@ const router = createBrowserRouter([
         path: '/password/:id',
         element: <SetPassword />,
     },
+     {
+        path: '/verify-email',
+        element: <Otp />,
+    },
     {
         path: '/app/',
         element: (
-            // <AuthRequired requiredRoles={["Admin", "Mentor","OT","Student"]}>
+            <AuthRequired requiredRoles={["superadmin","admin"]}>
                 <Layout />
-            // </AuthRequired>
+             </AuthRequired>
         ),
         children: [
             {
@@ -57,34 +80,17 @@ const router = createBrowserRouter([
             },
             {
                 path: 'dashboard',
-                element: <div>dashboard Details</div>,
+                element: <Dashboard/>,
             },
             {
                 path: 'profile',
                 element: <Profile/>,
             },
-            {
-                path: 'setting',
-                element: <div>abc Details</div>,
+               {
+                path: 'users',
+                element: <Users />,
             },
-            {
-                path: 'assigned-mentors',
-                element: <div>assigned mentors Details</div>,
-            },
-            {
-                path: 'available-courses',
-                element: <div>available
-                    courses
-                </div>,
-            },
-            {
-                path: 'completed-courses',
-                element: <div>completed courses</div>,
-            },
-            {
-                path: 'scheduled-classes',
-                element: <div>scheduled classsess Details</div>,
-            },
+          
 
         ],
     },
