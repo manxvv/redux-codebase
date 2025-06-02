@@ -9,7 +9,6 @@ function ForgotPassword() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Password reset link sent to:", data.email);
     alert(`Password reset link sent to ${data.email}`);
   };
 

@@ -24,37 +24,27 @@ export default function Otp() {
 
     const handleVerifyOtp = async () => {
         setLoading(true);
-
         try {
-            const response = await axios.post(`${Urls.baseURL}/api/verify-email`, { 
-                otp,
-              
+            const response = await axios.post(`${Urls.baseURL}${Urls.verify}`, { 
+                otp,  
             });
-
-            const { user, access_token, refresh_token } = response.data.data;
-            
-            console.log("Login Success - User and Tokens:", { user, access_token });
-            
-            // Store in localStorage
+            const { user, access_token, refresh_token } = response.data.data;            
             localStorage.setItem("authData", JSON.stringify({
                 user,
                 access_token,
-                refresh_token // Include refresh_token if available
+                refresh_token  
             }));
-            
             dispatch(login({ 
                 user, 
                 access_token, 
-                refresh_token: refresh_token || null // Handle case where refresh_token might not exist
+                refresh_token: refresh_token || null 
             }));
             
-            // Show success toast
             toast.success("OTP verified successfully!");
             
-            // Navigate to dashboard
             navigate("/app/dashboard", { 
                 state: { otp },
-                replace: true // Optional: replace current history entry
+                replace: true 
             });
 
         } catch (error) {

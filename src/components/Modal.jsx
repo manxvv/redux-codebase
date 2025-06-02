@@ -40,6 +40,7 @@ const Modal = ({
   useEffect(() => {
     const handleEscape = (e) => {
       if (closeOnEscape && e.key === 'Escape' && isOpen) {
+        
         onClose();
       }
     };

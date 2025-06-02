@@ -26,6 +26,15 @@ const authSlice = createSlice({
       localStorage.removeItem('authData');
     },
 
+        initializeAuth: (state, action) => {
+      const { user, access_token, refresh_token } = action.payload;
+      state.user = user;
+      state.access_token = access_token;
+      state.refresh_token = refresh_token;
+      state.isAuthenticated = true;
+    },
+
+
   },
 });
 

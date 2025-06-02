@@ -2,21 +2,29 @@ import { ArrowUpDown, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import { DataTableDemo } from "../components/DataTable";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAdmin, deleteUsers, editUsers, fetchUsers } from "@/lib/api";
+import { companyList, createAdmin, deleteUsers, editUsers, fetchUsers, userBlock } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Modal from "@/components/Modal";
 import { useForm } from 'react-hook-form';
-import { useSelector } from "react-redux";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TabsHeader from "@/components/TabHeader";
 
 const Users = () => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [editingUserId, setEditingUserId] = useState(null);
-
+    const [activeTab, setActiveTab] = useState("admin")
     const queryClient = useQueryClient();
+    const [editMode, setEditMode] = useState(false);
+    const tabs = [
+        { value: "admin", label: "Admin Account" },
+        { value: "user", label: "User Account" },
+        { value: "company", label: "Company Account" },
+    ];
+
 
     const {
         register,
@@ -29,25 +37,45 @@ const Users = () => {
             email: '',
             phone: '',
             address: '',
-            role: 'admin',
-            password: ''
+            // role: '',
+            // password: ''
         }
     });
 
+    const handleApprovalToggle = (id, newValue) => {
+        console.log("Toggled approval for:", id, "New Value:", newValue);
+        blockMutation.mutate(id)
+    };
+
+    const blockMutation = useMutation({
+        mutationFn: (id) => userBlock(id),
+        // onSuccess: () => {
+        // },
+        onError: (error) => {
+            console.error(error);
+        },
+    })
+
+
+
     const { data, isLoading, error } = useQuery({
-        queryKey: ['users'],
-        queryFn: fetchUsers,
+        queryKey: ['users', activeTab],
+        queryFn: () => fetchUsers(activeTab),
     });
 
+    const { data: company } = useQuery({
+        queryKey: ['company'],
+        queryFn: companyList,
+    });
 
     const createMutation = useMutation({
         mutationFn: (data) => createAdmin(data),
-        onSuccess: (data) => {
+        onSuccess: () => {
             queryClient.invalidateQueries(["users"]);
             setIsModalOpen(false);
-
         },
         onError: (error) => {
+            console.error(error);
         },
     })
 
@@ -56,6 +84,7 @@ const Users = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(["users"]);
             setIsModalOpen(false);
+
             setEditingUserId(null);
         },
         onError: (error) => {
@@ -75,35 +104,31 @@ const Users = () => {
         },
     });
 
-
-
     const onSubmit = async (data) => {
         try {
             if (editingUserId) {
-                await updateMutation.mutateAsync({ id: editingUserId, data: data });
-            }
-            else {
-
+                const { _id, __v, createdAt, updatedAt, ...cleanData } = data;
+                await updateMutation.mutateAsync({ id: editingUserId, data: cleanData });
+            } else {
                 await createMutation.mutateAsync(data);
                 reset();
             }
         } catch (error) {
-            console.error('Error creating user:', error);
-            alert('Error creating user. Please try again.');
+            console.error('Error saving user:', error);
+            alert('Error saving user. Please try again.');
         }
     };
 
-
     const handleCancel = () => {
         setIsModalOpen(false);
-        setEditingUserId(null); // ensure edit mode is cleared
+        setEditingUserId(null);
         reset({
             name: '',
             email: '',
             phone: '',
             address: '',
-            password: '',
-            role: 'admin',
+            // password: '',
+            // role: '',
         });
     };
     const handleFilterClick = () => {
@@ -113,16 +138,119 @@ const Users = () => {
     const handleDelete = (user) => {
         setEditingUserId(user);
         setDeleteModalOpen(true)
-        console.log(user, 'fsd');
-
     }
 
+    const handleTabChange = (value) => {
+        setActiveTab(value)
+        setGlobalFilter("")
+    }
 
     const handleEdit = (user) => {
         reset(user)
+        setEditMode(true)
         setEditingUserId(user._id);
         setIsModalOpen(true)
     }
+
+    const companyColumns = [
+        {
+            accessorKey: "company",
+            header: "Company Name",
+            cell: ({ row }) => row.getValue("company"),
+        },
+        {
+            accessorKey: "nickname",
+            header: "Nickname",
+            cell: ({ row }) => row.getValue("nickname"),
+        },
+        {
+            accessorKey: "ceoName",
+            header: "CEO Name",
+            cell: ({ row }) => row.getValue("ceoName"),
+        },
+        {
+            accessorKey: "managerName",
+            header: "Manager Name",
+            cell: ({ row }) => row.getValue("managerName"),
+        },
+        {
+            accessorKey: "email",
+            header: "Email",
+            cell: ({ row }) => row.getValue("email"),
+        },
+        {
+            accessorKey: "em_email",
+            header: "Emergency Email",
+            cell: ({ row }) => row.getValue("em_email"),
+        },
+        {
+            accessorKey: "phone",
+            header: "Phone",
+            cell: ({ row }) => row.getValue("phone"),
+        },
+        {
+            accessorKey: "address",
+            header: "Address",
+            cell: ({ row }) => row.getValue("address"),
+        },
+        {
+            accessorKey: "country",
+            header: "Country",
+            cell: ({ row }) => row.getValue("country"),
+        },
+        {
+            accessorKey: "bizCode",
+            header: "Business Code",
+            cell: ({ row }) => row.getValue("bizCode"),
+        },
+        {
+            accessorKey: "code",
+            header: "Company Code",
+            cell: ({ row }) => row.getValue("code"),
+        },
+        {
+            accessorKey: "companyLicense",
+            header: "License",
+            cell: ({ row }) => row.getValue("companyLicense"),
+        },
+        {
+            accessorKey: "kycStatus",
+            header: "KYC Status",
+            cell: ({ row }) => row.getValue("kycStatus"),
+        },
+        {
+            accessorKey: "is_verified",
+            header: "Verified",
+            cell: ({ row }) => (row.getValue("is_verified") ? "Yes" : "No"),
+        },
+        {
+            accessorKey: "is_blocked",
+            header: "Blocked",
+            cell: ({ row }) => (row.getValue("is_blocked") ? "Yes" : "No"),
+        },
+        {
+            accessorKey: "referalCode",
+            header: "Referral Code",
+            cell: ({ row }) => row.getValue("referalCode"),
+        },
+        {
+            accessorKey: "role",
+            header: "Role",
+            cell: ({ row }) => row.getValue("role"),
+        },
+        {
+            accessorKey: "profile",
+            header: "Profile",
+            cell: ({ row }) => (
+                <img
+                    src={row.getValue("profile")}
+                    alt="Profile"
+                    className="h-8 w-8 rounded-full object-cover"
+                />
+            ),
+        },
+    ];
+
 
     const columns = [
         //     {
@@ -151,6 +279,11 @@ const Users = () => {
             accessorKey: "name",
             header: "Name",
             cell: ({ row }) => row.getValue("name"),
+        },
+        {
+            accessorKey: "code",
+            header: "Code",
+            cell: ({ row }) => row.getValue("code"),
         },
         {
             accessorKey: "email",
@@ -191,7 +324,22 @@ const Users = () => {
             header: "Nickname",
             cell: ({ row }) => row.getValue("nickname"),
         },
+
         {
+            accessorKey: "is_approved",
+            header: "Approved",
+            cell: ({ row }) => {
+                const val = row.getValue("is_approved");
+                const id = row.getValue("_id");
+
+                return (
+                    <Switch
+                        checked={val}
+                        onCheckedChange={(checked) => handleApprovalToggle(id, checked)}
+                    />
+                );
+            },
+        }, {
             accessorKey: "verification_otp",
             header: "OTP",
             cell: ({ row }) => row.getValue("verification_otp"),
@@ -266,32 +414,73 @@ const Users = () => {
             <div className="flex flex-1">
                 <div className="p-2 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
                     <Outlet />
-                    <div className="flex items-center justify-between py-4">
-                        <Input
-                            placeholder="Search users..."
-                            value={globalFilter ?? ""}
-                            onChange={(event) => setGlobalFilter(event.target.value)}
-                            className="max-w-sm"
-                        />
-                        <div className="flex gap-2">
-                            <Button onClick={() => {
 
-                                reset()
-                                setIsModalOpen(true)
-                            }
-                            }>Create</Button>
-                            <Button onClick={handleFilterClick}>Filter</Button>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4">
+                        {/* Tabs Section */}
+                        {/* <Tabs
+      value={activeTab}
+      onValueChange={handleTabChange}
+      defaultValue="account"
+      className="w-full md:w-[400px]"
+    >
+<TabsList
+  className="
+    w-full 
+    flex 
+    flex-wrap 
+    justify-start 
+    md:justify-center 
+    gap-2 
+    overflow-x-auto 
+    scrollbar-none
+  "
+>
+  <TabsTrigger value="admin">Admin Account</TabsTrigger>
+  <TabsTrigger value="user">User Account</TabsTrigger>
+  <TabsTrigger value="company">Company Account</TabsTrigger>
+</TabsList>
+
+    </Tabs> */}
+
+                        <TabsHeader
+                            tabs={tabs}
+                            value={activeTab}
+                            onChange={setActiveTab}
+                        />
+
+
+                        {/* Controls Section */}
+                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                            <Input
+                                placeholder="Search users..."
+                                value={globalFilter ?? ""}
+                                onChange={(event) => setGlobalFilter(event.target.value)}
+                                className="w-full sm:max-w-sm"
+                            />
+                            <div className="flex gap-2">
+                                <Button
+                                    onClick={() => {
+                                        reset();
+                                        setIsModalOpen(true);
+                                        setEditMode(false);
+
+                                    }}
+                                >
+                                    Create
+                                </Button>
+                                <Button onClick={handleFilterClick}>Filter</Button>
+                            </div>
                         </div>
                     </div>
+
                     <DataTableDemo
-                        columns={columns || []}
-                        data={data?.data || []}
+                        columns={(activeTab === 'company' ? companyColumns : columns) || []}
+                        data={(activeTab === 'company' ? company?.data : data?.data) || []}
                         globalFilter={globalFilter}
                         setGlobalFilter={setGlobalFilter}
                     />
                 </div>
             </div>
-
 
             <Modal
                 isOpen={isModalOpen}
@@ -383,57 +572,64 @@ const Users = () => {
                             placeholder="Enter your address"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            {...register("password")}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 
-                        />
-                    </div>
+                    {editMode === false && (
 
-                    {/* Role Field */}
-                    {/* <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Role *
-                        </label>
-                        <div className="space-y-2">
-                            <label className="flex items-center space-x-2">
-                                <input
-                                    type="radio"
-                                    value="fan"
-                                    {...register("role", { required: "Role is required" })}
-                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">Fan</span>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Password
                             </label>
-                            <label className="flex items-center space-x-2">
-                                <input
-                                    type="radio"
-                                    value="management"
-                                    {...register("role", { required: "Role is required" })}
-                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">Management</span>
-                            </label>
-                            <label className="flex items-center space-x-2">
-                                <input
-                                    type="radio"
-                                    value="admin"
-                                    {...register("role", { required: "Role is required" })}
-                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">Admin</span>
-                            </label>
+                            <input
+                                type="password"
+                                {...register("password")}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+
+                            />
                         </div>
-                        {errors.role && (
-                            <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
-                        )}
-                    </div> */}
+                    )
+                    }
 
+                    {editMode === false && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Role *
+                            </label>
+                            <div className="space-y-2">
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="radio"
+                                        value="crypto_admin"
+                                        {...register("role", { required: "Role is required" })}
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                    />
+                                    <span className="text-gray-700">Crypto Admin</span>
+                                </label>
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="radio"
+                                        value="content_admin"
+                                        {...register("role", { required: "Role is required" })}
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                    />
+                                    <span className="text-gray-700">Content Admin</span>
+                                </label>
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="radio"
+                                        value="operator"
+                                        {...register("role", { required: "Role is required" })}
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                    />
+                                    <span className="text-gray-700">Operator</span>
+                                </label>
+                            </div>
+                            {errors.role && (
+                                <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+                            )}
+                        </div>
+                    )
+                    }
                     {/* Action Buttons */}
                     <div className="flex justify-end space-x-3 pt-4">
                         <button
@@ -471,9 +667,9 @@ const Users = () => {
                             Cancel
                         </Button>
                         <Button variant="destructive" onClick={() => {
-                         
-                                deleteMutation.mutate({ id: editingUserId });
-                      
+
+                            deleteMutation.mutate({ id: editingUserId });
+
                         }}
                         >
                             Confirm Delete

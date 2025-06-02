@@ -12,10 +12,12 @@ import { cn } from "../lib/utils";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "./Header";
 import { logout } from "@/features/auth/authSlice";
+import Modal from "./Modal";
 
 export function SidebarDemo({ outlet }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [modalOpen, setModalOpen] = useState(false);
 
 
 
@@ -33,7 +35,13 @@ export function SidebarDemo({ outlet }) {
         return "User Management";
       case "/app/profile":
         return "Profile";
-      default:
+      case "/app/membership":
+        return "Membership";
+      case "/app/campaign":
+        return "Campaign";
+      case "/app/fanclub":
+        return "Fanclub List";
+        default:
         return "Fandom.Live";
     }
   };
@@ -57,6 +65,28 @@ export function SidebarDemo({ outlet }) {
       ),
     },
     {
+      label: "Membership",
+      href: "membership",
+
+      icon: (
+        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Campaign",
+      href: "campaign",
+      icon: (
+        <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+        {
+      label: "Fanclub",
+      href: "fanclub",
+      icon: (
+        <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
       label: "Profile",
       href: "profile",
       icon: (
@@ -68,66 +98,98 @@ export function SidebarDemo({ outlet }) {
       icon: (
         <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
-      action: handleLogout, // Use the function reference
+      action: () => setModalOpen(true),
     },
   ];
 
   const [open, setOpen] = useState(false);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col md:flex-row bg-white dark:bg-neutral-900 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-500 overflow-hidden h-full"
-      )}
-    >
-      <Sidebar open={open} setOpen={setOpen} animate={false}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <>
-              <Logo />
-            </>
-            <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink
-                  key={idx}
-                  link={{
-                    label: link.label,
-                    href: link.href,
-                    icon: link.icon,
-                  }}
-                  action={link.action}
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            <SidebarLink
-              link={{
-                label: user?.name || "User",
-                href: "/app/profile",
-                icon: (
-                  <img
-                    src="/images.png"
-                    className="h-7 w-7 flex-shrink-0 object-cover rounded-full"
-                    alt="Avatar"
-                    onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/28x28/cccccc/666666?text=U";
+    <>
+      <div
+        className={cn(
+          "flex flex-col md:flex-row bg-white dark:bg-neutral-900 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-500 overflow-hidden h-full"
+        )}
+      >
+        <Sidebar open={open} setOpen={setOpen} animate={false}>
+          <SidebarBody className="justify-between gap-10">
+            <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+              <>
+                <Logo />
+              </>
+              <div className="mt-8 flex flex-col gap-2">
+                {links.map((link, idx) => (
+                  <SidebarLink
+                    key={idx}
+                    link={{
+                      label: link.label,
+                      href: link.href,
+                      icon: link.icon,
                     }}
+                    action={link.action}
                   />
-                ),
-              }}
-            />
-          </div>
-        </SidebarBody>
-      </Sidebar>
+                ))}
+              </div>
+            </div>
+            <div>
+              <SidebarLink
+                link={{
+                  label: user?.name || "User",
+                  href: "/app/profile",
+                  icon: (
+                    <img
+                      src="/images.png"
+                      className="h-7 w-7 flex-shrink-0 object-cover rounded-full"
+                      alt="Avatar"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/28x28/cccccc/666666?text=U";
+                      }}
+                    />
+                  ),
+                }}
+              />
+            </div>
+          </SidebarBody>
+        </Sidebar>
 
-      <div className="flex no-scrollbar border flex-col flex-1 overflow-hidden">
-        <Header header={getHeaderTitle()} />
-        <div className="flex-1 no-scrollbar overflow-y-auto">
-          {outlet}
+        <div className="flex no-scrollbar border flex-col flex-1 overflow-hidden">
+          <Header header={getHeaderTitle()} />
+          <div className="flex-1 no-scrollbar overflow-y-auto">
+            {outlet}
+          </div>
         </div>
       </div>
+<Modal
+  isOpen={modalOpen}
+  onClose={() => setModalOpen(false)}
+  title="Confirm Logout"
+  size="sm"
+  showCloseButton={true}
+  closeOnBackdrop={true}
+  closeOnEscape={true}
+>
+  <div className="p-4">
+    <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+      Are you sure you want to log out?
+    </p>
+    <div className="flex justify-end gap-2">
+      <button
+        onClick={() => setModalOpen(false)}
+        className="px-4 py-2 text-sm rounded bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+      >
+        Cancel
+      </button>
+      <button
+        onClick={handleLogout}
+        className="px-4 py-2 text-sm rounded bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+      >
+        Logout
+      </button>
     </div>
+  </div>
+</Modal>
+    </>
+
   );
 }
 

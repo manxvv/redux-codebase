@@ -9,19 +9,15 @@ const http = axios.create({
 
 http.interceptors.request.use(
   (config) => {
-    const token = store.getState().auth.access_token; // <- Access token directly
-
+    const token = store.getState().auth.access_token; 
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
-
-    // Check if data is FormData (multipart/form-data)
     if (config.data instanceof FormData) {
       config.headers['Content-Type'] = 'multipart/form-data';
     } else {
       config.headers['Content-Type'] = 'application/json';
     }
-
     return config;
   },
   (error) => {

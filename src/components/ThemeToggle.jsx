@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
-import { Button } from './ui/button'; // Adjust path based on your structure
+import { Button } from './ui/button'; 
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
