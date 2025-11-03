@@ -6,13 +6,13 @@ import ForgotPassword from './Pages/ForgotPassword';
 import Dashboard from "./Pages/Dashboard"
 import Profile from './Pages/Profile';
 import SetPassword from './Pages/SetPassword';
-import Home from './Pages/Home';
 import { useSelector } from 'react-redux';
 import Users from './Pages/Users';
 import Otp from './Pages/Otp';
 import Membership from './Pages/Membership';
 import Campaign from './Pages/Campaign';
 import Fanclub from './Pages/Fanclub';
+import VisionFluxLMS from './Pages/VisionFluxLMS';
 
 
 function GuestOnly({ children }) {
@@ -65,7 +65,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: <Home />,
+    element: <VisionFluxLMS />,
   },
   {
     path: '/password/:id',

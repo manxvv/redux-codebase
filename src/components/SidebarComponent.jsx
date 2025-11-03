@@ -42,7 +42,7 @@ export function SidebarDemo({ outlet }) {
       case "/app/fanclub":
         return "Fanclub List";
         default:
-        return "Fandom.Live";
+        return "Visionflux AI";
     }
   };
 
@@ -205,7 +205,7 @@ export const Logo = () => {
         animate={{ opacity: 1 }}
         className="font-medium text-black dark:text-white whitespace-pre"
       >
-        Fandom.Live
+        Visionflux AI
       </motion.span>
     </Link>
   );
