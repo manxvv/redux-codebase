@@ -13,6 +13,9 @@ import Membership from './Pages/Membership';
 import Campaign from './Pages/Campaign';
 import Fanclub from './Pages/Fanclub';
 import VisionFluxLMS from './Pages/VisionFluxLMS';
+import PreVal from './Pages/PreVal';
+import PostImp from './Pages/PostImp';
+import IssueRca from './Pages/IssueRca';
 
 
 function GuestOnly({ children }) {
@@ -65,7 +68,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: <VisionFluxLMS />,
+  element: <Navigate to="/app/dashboard" replace />
   },
   {
     path: '/password/:id',
@@ -78,9 +81,9 @@ const router = createBrowserRouter([
   {
     path: '/app/',
     element: (
-      <AuthRequired requiredRoles={["superadmin", "admin"]}>
+      // <AuthRequired requiredRoles={["superadmin", "admin"]}>
         <Layout />
-      </AuthRequired>
+      // </AuthRequired>
     ),
     children: [
       {
@@ -88,7 +91,7 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: 'dashboard',
+        path: 'ipsec-dashboard',
         element: <Dashboard />,
       },
       {
@@ -96,16 +99,16 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: 'users',
-        element: <Users />,
+        path: 'pre-val-and-readiness',
+        element: <PreVal />,
       },
       {
-        path: 'membership',
-        element: <Membership />,
+        path: 'post-implementation',
+        element: <PostImp />,
       },
       {
-        path: 'campaign',
-        element: <Campaign />,
+        path: 'issue-rca',
+        element: <IssueRca />,
       },
 
             {

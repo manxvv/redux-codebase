@@ -29,18 +29,18 @@ export function SidebarDemo({ outlet }) {
 
   const getHeaderTitle = () => {
     switch (location.pathname) {
-      case "/app/dashboard":
-        return "Dashboard";
-      case "/app/users":
-        return "User Management";
+      case "/app/ipsec-dashboard":
+        return "IPSEC Dashboard";
+      case "/app/pre-val-and-readiness":
+        return "Pre Validation and Readiness";
       case "/app/profile":
         return "Profile";
-      case "/app/membership":
-        return "Membership";
+      case "/app/post-implementation":
+        return "Post Implementation";
       case "/app/campaign":
         return "Campaign";
-      case "/app/fanclub":
-        return "Fanclub List";
+      case "/app/issue-rca":
+        return "Issue Rca";
         default:
         return "Visionflux AI";
     }
@@ -50,49 +50,49 @@ export function SidebarDemo({ outlet }) {
 
   const links = [
     {
-      label: "Dashboard",
-      href: "dashboard",
+      label: "IPSEC Dashboard",
+      href: "ipsec-dashboard",
       icon: (
         <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Users",
-      href: "users",
+      label: "Pre-Validation & Readiness",
+      href: "pre-val-and-readiness",
 
       icon: (
         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Membership",
-      href: "membership",
+      label: "Post-Implementation",
+      href: "post-implementation",
 
       icon: (
         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Campaign",
-      href: "campaign",
+      label: "Issue RCA",
+      href: "issue-rca",
       icon: (
         <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-        {
-      label: "Fanclub",
-      href: "fanclub",
-      icon: (
-        <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Profile",
-      href: "profile",
-      icon: (
-        <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+    //     {
+    //   label: "Fanclub",
+    //   href: "fanclub",
+    //   icon: (
+    //     <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+    //   ),
+    // },
+    // {
+    //   label: "Profile",
+    //   href: "profile",
+    //   icon: (
+    //     <IconUserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+    //   ),
+    // },
     {
       label: "Logout",
       icon: (
