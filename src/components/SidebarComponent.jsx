@@ -205,7 +205,6 @@ export const Logo = () => {
         animate={{ opacity: 1 }}
         className="font-medium text-black dark:text-white whitespace-pre"
       >
-        Visionflux AI
       </motion.span>
     </Link>
   );
