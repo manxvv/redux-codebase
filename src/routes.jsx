@@ -68,7 +68,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/',
-  element: <Navigate to="/app/dashboard" replace />
+  element: <Navigate to="/app/ipsec-dashboard" replace />
   },
   {
     path: '/password/:id',
